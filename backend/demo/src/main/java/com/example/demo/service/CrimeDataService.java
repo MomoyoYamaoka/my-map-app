@@ -59,11 +59,11 @@ public class CrimeDataService {
                 centerLat - radiusDeg, centerLon - radiusDeg,
                 centerLat + radiusDeg, centerLon + radiusDeg);
 
-        String body;
+        Map<String, Object> body;
         try {
             body = restTemplate.postForObject(
-                    "https://overpass-api.de/api/interpreter",
-                    query, String.class);
+                "https://overpass-api.de/api/interpreter",
+                query, Map.class);
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -71,7 +71,7 @@ public class CrimeDataService {
 
         List<StreetData> result = new ArrayList<>();
         try {
-            JsonNode root = mapper.readTree(body);
+            JsonNode root = mapper.convertValue(body, JsonNode.class);
 
             Map<String, double[]> nodes = new HashMap<>();
             root.path("elements").forEach(el -> {
