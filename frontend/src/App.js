@@ -253,7 +253,9 @@ function MyMap({coords, language, streets}) {
         zoom={13}
         onLoad={(map) => (mapRef.current = map)}
       >
-        {streets.map((street, idx) => (
+        {streets.map((street, idx) => {
+          console.log('Street ${idx}', street);
+          return (
           <Polyline
             key={idx}
             path={street.coordinates.map(p => ({
@@ -266,7 +268,8 @@ function MyMap({coords, language, streets}) {
               strokeWeight: 6
             }}
           />
-        ))}
+          );
+          })}
       </GoogleMap>
     </LoadScript>
   );
