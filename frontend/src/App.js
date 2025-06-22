@@ -262,7 +262,7 @@ function MyMap({coords, language, streets}) {
             }))}
             options={{
               strokeColor: street.color,
-              strokeOpacity: 0.1,
+              strokeOpacity: 1.0,
               strokeWeight: 6
             }}
           />
