@@ -189,21 +189,15 @@ export default App;
 
 function MyMap({ coords, language, streets }) {
   const mapRef = React.useRef(null);
-  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const googleMapsApiKey =
+    import.meta.env.VITE_GOOGLE_MAPS_API_KEY ||
+    "AIzaSyCans_CRdAN8_NSX5-kYpgxkAdPfyUV_7c";
 
   React.useEffect(() => {
     if (mapRef.current && coords) {
       mapRef.current.panTo({ lat: coords[0], lng: coords[1] });
     }
   }, [coords]);
-
-  if (!googleMapsApiKey) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-gray-700 dark:text-gray-200">
-        Missing <code className="mx-1">VITE_GOOGLE_MAPS_API_KEY</code> in environment.
-      </div>
-    );
-  }
 
   return (
     <LoadScript googleMapsApiKey={googleMapsApiKey} language={language === "日本語" ? "ja" : "en"}>
