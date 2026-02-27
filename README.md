@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+# Safety Map App (HerRoute)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+犯罪スコア等にもとづいて、地図上の道路を色分け表示するアプリです。
 
-## Available Scripts
+## 構成
 
-In the project directory, you can run:
+- `frontend/`: React（Create React App）で地図UIを表示
+  - バックエンド `GET /api/streets` から道路データを取得してポリライン描画
+- `backend/`: Spring Boot（Overpass API + 犯罪スコアCSV）
+  - Overpass API から道路形状を取得し、`CrimeScore.csv` をもとに道路ごとの平均スコアを計算
+- `analyzer/`: Python（Street View + YOLO/ResNet等）でスコア算出用の分析処理（任意）
+- `data/`: raw/interim/processed のデータ置き場（現状は空）
 
-### `npm start`
+## 必要なもの
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js（`frontend/` 用）
+- Java 17（`backend/` の Spring Boot 用）
+- （任意）Python（`analyzer/` 用）
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## セットアップ（フロント）
 
-### `npm test`
+Google Maps APIキーは **コードに直書きせず環境変数で指定**します。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1) `frontend/.env.example` をコピーして `frontend/.env` を作成
 
-### `npm run build`
+2) `VITE_GOOGLE_MAPS_API_KEY` を設定
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+（任意）バックエンドURLを変える場合は `VITE_API_BASE_URL` も設定
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 起動手順（開発）
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### バックエンド
 
-### `npm run eject`
+```bash
+cd backend
+./mvnw spring-boot:run
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+起動すると `http://localhost:8080/api/streets` が使えます。
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### フロントエンド
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+`http://localhost:3000` を開きます。
 
-## Learn More
+※ もし `npm install` で `EPERM ... .npm` の権限エラーが出る場合は、次で回避できます。
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+cd frontend
+npm install --cache .npm-cache
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## データ（犯罪スコアCSV）
 
-### Code Splitting
+バックエンドは classpath 上の CSV を読み込みます。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- 優先: `backend/src/main/resources/data/StreetViewScore.csv`
+  - Google Street View 解析（`analyzer/yolo/safety_sensor.py`）の結果CSVをここに配置し、
+    ヘッダー `latitude, longitude, normalized_discomfort, ...` を持つ形式を想定しています。
+  - `normalized_discomfort`（なければ `overall_discomfort`）をスコアとして道路の色分けに使用します。
+- フォールバック: `backend/src/main/resources/data/CrimeScore.csv`
+  - 形式: `latitude,longitude,score`
 
-### Analyzing the Bundle Size
+## analyzer（任意）
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+`analyzer/yolo/safety_sensor.py` は `GOOGLE_MAPS_API_KEY` を `.env` から読み込みます。
+必要なら `analyzer/.env.example` を `analyzer/.env` にコピーして設定してください。

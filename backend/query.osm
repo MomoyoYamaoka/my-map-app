@@ -1,0 +1,7 @@
+[out:json];
+(
+  way["highway"](47.5,-122.4,47.7,-122.2);  // Seattle近辺（緯度経度で範囲指定）
+);
+out body;
+>;
+out skel qt;
