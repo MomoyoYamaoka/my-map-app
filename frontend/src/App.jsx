@@ -43,15 +43,15 @@ function App() {
     <div className={`${darkMode ? "dark" : ""}`}>
       <div className="h-screen w-screen flex flex-col font-sans">
         <div className="bg-white shadow-md p-4 flex items-center space-x-3">
-          <Footprints className="text-blue-700 w-6 h-6" />
-          <h1 className="text-xl font-poppins text-blue-900">
+          <Footprints className="w-6 h-6 text-[#D04088]" />
+          <h1 className="text-xl font-poppins text-[#D04088]">
             <span className="font-normal">Her</span>
             <span className="font-bold">Route</span>
           </h1>
         </div>
 
         <div className="flex flex-1">
-          <aside className="bg-blue-700 text-white w-16 flex flex-col items-center py-4 space-y-6">
+          <aside className="bg-[#CD4187] text-white w-16 flex flex-col items-center py-4 space-y-6">
             <Home
               className="w-6 h-6 cursor-pointer"
               onClick={() => {
@@ -76,7 +76,7 @@ function App() {
             />
           </aside>
 
-          <main className="flex-1 bg-blue-100 dark:bg-gray-900 p-6 overflow-hidden flex flex-col">
+          <main className="flex-1 bg-[#f5f2f3] dark:bg-gray-900 p-6 overflow-hidden flex flex-col">
             {!isSettingOpen && !isContactOpen && (
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 space-y-4 md:space-y-0 md:space-x-4">
                 <div className="flex justify-between items-center mb-4">
@@ -91,7 +91,7 @@ function App() {
                       <div className="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full relative">
                         <div
                           className={`absolute w-5 h-5 bg-white rounded-full shadow transition transform ${
-                            darkMode ? "translate-x-5 bg-blue-400" : "translate-x-0"
+                            darkMode ? "translate-x-5 bg-pink-400" : "translate-x-0"
                           }`}
                         />
                       </div>
