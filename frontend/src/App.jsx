@@ -13,7 +13,9 @@ function App() {
   const [streets, setStreets] = useState([]);
 
   useEffect(() => {
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+    const apiBaseUrl =
+      import.meta.env.VITE_API_BASE_URL ??
+      (import.meta.env.DEV ? "http://localhost:8080" : "");
     fetch(`${apiBaseUrl}/api/streets`)
       .then((res) => res.json())
       .then((data) => {
