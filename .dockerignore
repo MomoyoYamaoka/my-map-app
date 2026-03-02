@@ -1,0 +1,13 @@
+.git
+.gitignore
+*.md
+node_modules
+frontend/node_modules
+frontend/dist
+backend/target
+analyzer
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store

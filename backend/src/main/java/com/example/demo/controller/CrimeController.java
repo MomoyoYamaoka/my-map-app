@@ -20,6 +20,7 @@ public class CrimeController {
     public ResponseEntity<List<StreetData>> getDynamicStreetData() {
         try {
             List<StreetData> result = crimeDataService.calculateStreetScores(
+                    crimeDataService.loadStreetViewData(),
                     crimeDataService.loadCrimeData()
             );
             return ResponseEntity.ok(result);

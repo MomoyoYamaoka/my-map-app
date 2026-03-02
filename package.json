@@ -6,6 +6,7 @@
     "frontend:install": "npm --prefix frontend install",
     "start": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend build",
+    "build:backend": "npm run build --prefix frontend && cp -R frontend/dist/. backend/src/main/resources/static/",
     "preview": "npm --prefix frontend preview",
     "backend:run": "cd backend && ./mvnw spring-boot:run"
   }

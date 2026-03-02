@@ -1,4 +1,5 @@
 import os
+import shutil
 import requests
 from PIL import Image
 import io
@@ -72,8 +73,8 @@ class SafetySensor:
             )
         ])
         
-        # 出力ディレクトリの作成
-        self.output_dir = "analysis_results"
+        # 出力先: outputs/ にするとバックエンドが ../analyzer/yolo/outputs から参照できる
+        self.output_dir = "outputs"
         self.images_dir = os.path.join(self.output_dir, "images")
         os.makedirs(self.output_dir, exist_ok=True)
         os.makedirs(self.images_dir, exist_ok=True)
@@ -310,11 +311,20 @@ def main():
     ]
     df = df[columns]
     
-    # CSVファイルの保存
+    # CSVファイルの保存（Google Street View 画像から算出したスコア → バックエンドで地図色分けに利用）
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_filename = f"seattle_analysis_{timestamp}.csv"
     csv_path = os.path.join(sensor.output_dir, csv_filename)
     df.to_csv(csv_path, index=False, encoding='utf-8')
+    
+    # バックエンドの data/ に StreetViewScore.csv としてコピー（優先読込用）
+    _script_dir = os.path.dirname(os.path.abspath(__file__))
+    backend_data_dir = os.path.join(_script_dir, "..", "..", "backend", "src", "main", "resources", "data")
+    backend_data_dir = os.path.normpath(backend_data_dir)
+    if os.path.isdir(backend_data_dir):
+        dest = os.path.join(backend_data_dir, "StreetViewScore.csv")
+        shutil.copy2(csv_path, dest)
+        print(f"Backend用にコピーしました: {dest}")
     
     print(f"\n分析結果を保存しました:")
     print(f"CSVファイル: {csv_path}")

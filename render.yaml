@@ -1,0 +1,13 @@
+# Render Blueprint: HerRoute (Safety Map) を Docker でデプロイ
+# リポジトリを Render に接続し、この Blueprint でデプロイする
+# 環境変数 VITE_GOOGLE_MAPS_API_KEY をダッシュボードで設定すること（ビルド時にフロントに埋め込まれる）
+
+services:
+  - type: web
+    name: herroute
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: VITE_GOOGLE_MAPS_API_KEY
+        sync: false
+        # ダッシュボードの Environment で値を設定（Secret 推奨）
