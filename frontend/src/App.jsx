@@ -186,8 +186,13 @@ function App() {
                 <textarea rows={6} maxLength={200} className="w-full px-4 py-2 rounded border" />
               </div>
             ) : (
-              <div className="flex-1 rounded overflow-hidden">
-                <MyMap coords={coords} language={language} streets={streets} />
+              <div className="flex-1 flex flex-col rounded overflow-hidden">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  道路データ: {Array.isArray(streets) ? streets.length : 0} 本
+                </p>
+                <div className="flex-1 min-h-0 rounded overflow-hidden">
+                  <MyMap coords={coords} language={language} streets={streets} />
+                </div>
               </div>
             )}
           </main>
@@ -201,6 +206,7 @@ export default App;
 
 function MyMap({ coords, language, streets }) {
   const mapRef = React.useRef(null);
+  const [mapReady, setMapReady] = React.useState(false);
   const googleMapsApiKey =
     import.meta.env.VITE_GOOGLE_MAPS_API_KEY ||
     "AIzaSyCans_CRdAN8_NSX5-kYpgxkAdPfyUV_7c";
@@ -211,15 +217,23 @@ function MyMap({ coords, language, streets }) {
     }
   }, [coords]);
 
+  const safeStreets = Array.isArray(streets) ? streets : [];
+  const paths = safeStreets.filter(
+    (s) => s && s.coordinates && Array.isArray(s.coordinates) && s.coordinates.length >= 2
+  );
+
   return (
     <LoadScript googleMapsApiKey={googleMapsApiKey} language={language === "日本語" ? "ja" : "en"}>
       <GoogleMap
         mapContainerStyle={{ width: "100%", height: "100%" }}
         center={{ lat: coords[0], lng: coords[1] }}
         zoom={13}
-        onLoad={(map) => (mapRef.current = map)}
+        onLoad={(map) => {
+          mapRef.current = map;
+          setMapReady(true);
+        }}
       >
-        {streets.map((street, idx) => (
+        {mapReady && paths.map((street, idx) => (
           <Polyline
             key={idx}
             path={street.coordinates.map((p) => ({

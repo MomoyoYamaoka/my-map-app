@@ -350,13 +350,13 @@ public class CrimeDataService {
     private List<StreetData> loadCachedStreets() {
         try {
             ClassPathResource resource = new ClassPathResource("data/cached_streets.json");
-            if (!resource.exists()) return Collections.emptyList();
-            try (Reader r = new InputStreamReader(resource.getInputStream())) {
+            try (Reader r = new InputStreamReader(resource.getInputStream(), java.nio.charset.StandardCharsets.UTF_8)) {
                 List<StreetData> list = mapper.readValue(r, new TypeReference<List<StreetData>>() {});
                 return list != null ? list : Collections.emptyList();
             }
         } catch (Exception e) {
             System.err.println("Cached streets load failed: " + e.getMessage());
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
