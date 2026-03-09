@@ -166,10 +166,20 @@ public class CrimeDataService {
     public List<StreetData> calculateStreetScores(List<CrimeData> streetViewScores, List<CrimeData> crimeScores) {
         boolean useCachedOnly = "true".equalsIgnoreCase(System.getenv("USE_CACHED_STREETS"))
                 || "true".equalsIgnoreCase(System.getProperty("herroute.use.cached.streets"));
-        if (useCachedOnly) {
-            List<StreetData> cached = loadCachedStreets();
-            System.out.println("USE_CACHED_STREETS=true: returning " + cached.size() + " segments");
+
+        // キャッシュを先に試す（本番で Overpass が遅い/失敗するため、キャッシュがあれば即返す）
+        List<StreetData> cached = loadCachedStreets();
+        if (!cached.isEmpty()) {
+            if (useCachedOnly) {
+                System.out.println("USE_CACHED_STREETS: returning " + cached.size() + " segments");
+            } else {
+                System.out.println("Streets: using cached data (" + cached.size() + " segments), skipping Overpass");
+            }
             return cached;
+        }
+        if (useCachedOnly) {
+            System.err.println("USE_CACHED_STREETS=true but cache empty, returning []");
+            return Collections.emptyList();
         }
 
         final double centerLat = 47.6062;   // Seattle
@@ -360,7 +370,11 @@ public class CrimeDataService {
             ClassPathResource resource = new ClassPathResource("data/cached_streets.json");
             try (Reader r = new InputStreamReader(resource.getInputStream(), java.nio.charset.StandardCharsets.UTF_8)) {
                 List<StreetData> list = mapper.readValue(r, new TypeReference<List<StreetData>>() {});
-                return list != null ? list : Collections.emptyList();
+                if (list != null && !list.isEmpty()) {
+                    System.out.println("Cached streets loaded: " + list.size() + " segments");
+                    return list;
+                }
+                return Collections.emptyList();
             }
         } catch (Exception e) {
             System.err.println("Cached streets load failed: " + e.getMessage());

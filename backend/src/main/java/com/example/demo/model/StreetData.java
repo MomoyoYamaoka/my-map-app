@@ -1,7 +1,10 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StreetData {
     private String streetId;
     private String streetName;
@@ -59,7 +62,7 @@ public class StreetData {
         this.crimePoints = crimePoints;
     }
 
-    // 内部クラス: Point（緯度・経度）
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Point {
         private double latitude;
         private double longitude;
