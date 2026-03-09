@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -199,8 +200,8 @@ public class CrimeDataService {
         }
         if (body == null) {
             if (lastError != null) lastError.printStackTrace();
-            System.err.println("Overpass: all endpoints failed, returning no streets");
-            return Collections.emptyList();
+            System.err.println("Overpass: all endpoints failed, trying cached fallback");
+            return loadCachedStreets();
         }
 
         List<StreetData> result = new ArrayList<>();
@@ -216,7 +217,7 @@ public class CrimeDataService {
                 try {
                     System.err.println("Overpass error: " + root.path("error").asText());
                 } catch (Exception ignored) {}
-                return Collections.emptyList();
+                return loadCachedStreets();
             }
 
             Map<String, double[]> nodes = new HashMap<>();
@@ -333,7 +334,31 @@ public class CrimeDataService {
                 merged.get(0).setColor("#ffff00");
             }
         }
+        if (merged.isEmpty()) {
+            List<StreetData> cached = loadCachedStreets();
+            if (!cached.isEmpty()) {
+                System.out.println("Streets: using cached fallback (" + cached.size() + " segments)");
+                return cached;
+            }
+        }
         return merged;
+    }
+
+    /**
+     * Overpass が使えない環境用。classpath の data/cached_streets.json があれば返す。
+     */
+    private List<StreetData> loadCachedStreets() {
+        try {
+            ClassPathResource resource = new ClassPathResource("data/cached_streets.json");
+            if (!resource.exists()) return Collections.emptyList();
+            try (Reader r = new InputStreamReader(resource.getInputStream())) {
+                List<StreetData> list = mapper.readValue(r, new TypeReference<List<StreetData>>() {});
+                return list != null ? list : Collections.emptyList();
+            }
+        } catch (Exception e) {
+            System.err.println("Cached streets load failed: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private static final double POINT_EPS = 1e-5;

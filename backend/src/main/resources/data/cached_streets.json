@@ -1,0 +1,37 @@
+[
+  {
+    "streetId": "cached-1",
+    "streetName": "Pike St",
+    "coordinates": [
+      {"latitude": 47.6105, "longitude": -122.3292},
+      {"latitude": 47.6098, "longitude": -122.3320},
+      {"latitude": 47.6090, "longitude": -122.3345}
+    ],
+    "averageCrimeScore": 0.4,
+    "color": "#90ee90",
+    "crimePoints": null
+  },
+  {
+    "streetId": "cached-2",
+    "streetName": "5th Ave",
+    "coordinates": [
+      {"latitude": 47.6120, "longitude": -122.3340},
+      {"latitude": 47.6085, "longitude": -122.3342},
+      {"latitude": 47.6050, "longitude": -122.3345}
+    ],
+    "averageCrimeScore": 0.7,
+    "color": "#ffff00",
+    "crimePoints": null
+  },
+  {
+    "streetId": "cached-3",
+    "streetName": "University St",
+    "coordinates": [
+      {"latitude": 47.6080, "longitude": -122.3365},
+      {"latitude": 47.6065, "longitude": -122.3370}
+    ],
+    "averageCrimeScore": 0.2,
+    "color": "#00ff00",
+    "crimePoints": null
+  }
+]
