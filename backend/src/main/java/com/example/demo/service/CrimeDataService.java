@@ -207,22 +207,27 @@ public class CrimeDataService {
         try {
             JsonNode root = mapper.convertValue(body, JsonNode.class);
             if (root.has("remark")) {
-                System.err.println("Overpass remark: " + root.path("remark").asText());
+                try {
+                    System.err.println("Overpass remark: " + root.path("remark").asText());
+                } catch (Exception ignored) {}
             }
-            if (root.has("error")) {
-                System.err.println("Overpass error: " + root.path("error").asText());
+            JsonNode elements = root.path("elements");
+            if (root.has("error") && (!elements.isArray() || elements.isEmpty())) {
+                try {
+                    System.err.println("Overpass error: " + root.path("error").asText());
+                } catch (Exception ignored) {}
                 return Collections.emptyList();
             }
 
             Map<String, double[]> nodes = new HashMap<>();
-            root.path("elements").forEach(el -> {
+            elements.forEach(el -> {
                 if ("node".equals(el.path("type").asText())) {
                     nodes.put(el.path("id").asText(),
                             new double[]{el.path("lat").asDouble(), el.path("lon").asDouble()});
                 }
             });
 
-            root.path("elements").forEach(el -> {
+            elements.forEach(el -> {
                 if (!"way".equals(el.path("type").asText())) return;
 
                 List<StreetData.Point> pts = new ArrayList<>();
