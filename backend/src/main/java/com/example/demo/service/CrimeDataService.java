@@ -164,6 +164,14 @@ public class CrimeDataService {
      * 道路ごとに二つのスコアを平均した値を新たな危険度スコアとして地図表示に使う。
      */
     public List<StreetData> calculateStreetScores(List<CrimeData> streetViewScores, List<CrimeData> crimeScores) {
+        boolean useCachedOnly = "true".equalsIgnoreCase(System.getenv("USE_CACHED_STREETS"))
+                || "true".equalsIgnoreCase(System.getProperty("herroute.use.cached.streets"));
+        if (useCachedOnly) {
+            List<StreetData> cached = loadCachedStreets();
+            System.out.println("USE_CACHED_STREETS=true: returning " + cached.size() + " segments");
+            return cached;
+        }
+
         final double centerLat = 47.6062;   // Seattle
         final double centerLon = -122.3321;
         final double radiusDeg = 0.01;

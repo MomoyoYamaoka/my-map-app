@@ -121,6 +121,7 @@ npm install --cache .npm-cache
    - リポジトリ接続後、`render.yaml` を検出してサービスが作成される。
    - **Environment** で次の変数を追加する:
      - `VITE_GOOGLE_MAPS_API_KEY`: Google Maps / Street View 用 API キー（**Secret** 推奨・ビルド時にフロントに埋め込まれる）
+     - （任意）`USE_CACHED_STREETS=true`: Overpass を呼ばずキャッシュだけ返す。本番で道路が表示されないときに試す。
 
 3. **Web Service で手動設定する場合**
    - **Environment**: `Docker`

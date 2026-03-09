@@ -189,6 +189,9 @@ function App() {
               <div className="flex-1 flex flex-col rounded overflow-hidden">
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                   道路データ: {Array.isArray(streets) ? streets.length : 0} 本
+                  {Array.isArray(streets) && streets.length === 0 && (
+                    <span className="ml-2 text-amber-600">（取得中またはAPI未接続）</span>
+                  )}
                 </p>
                 <div className="flex-1 min-h-0 rounded overflow-hidden">
                   <MyMap coords={coords} language={language} streets={streets} />
