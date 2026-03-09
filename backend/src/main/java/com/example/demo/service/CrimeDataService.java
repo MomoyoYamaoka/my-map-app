@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,13 +26,23 @@ import java.util.*;
 @Service
 public class CrimeDataService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private static final int OVERPASS_CONNECT_TIMEOUT_MS = 25_000;
+    private static final int OVERPASS_READ_TIMEOUT_MS = 90_000;
+
+    private final RestTemplate restTemplate = createOverpassRestTemplate();
     private final ObjectMapper mapper = new ObjectMapper();
     private final List<String> overpassEndpoints = List.of(
             "https://overpass-api.de/api/interpreter",
             "https://overpass.kumi.systems/api/interpreter",
             "https://overpass.openstreetmap.ru/api/interpreter"
     );
+
+    private static RestTemplate createOverpassRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(OVERPASS_CONNECT_TIMEOUT_MS);
+        factory.setReadTimeout(OVERPASS_READ_TIMEOUT_MS);
+        return new RestTemplate(factory);
+    }
 
     /**
      * Street View 画像解析由来のスコア（normalized_discomfort / overall_discomfort）を読む。
@@ -168,6 +179,7 @@ public class CrimeDataService {
         Exception lastError = null;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("User-Agent", "HerRoute/1.0 (Safety Map; https://github.com/MomoyoYamaoka/my-map-app)");
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("data", query);  // Overpass API が期待するキーは "data"
@@ -182,16 +194,25 @@ public class CrimeDataService {
                 if (body != null) break;
             } catch (Exception e) {
                 lastError = e;
+                System.err.println("Overpass " + endpoint + " failed: " + e.getMessage());
             }
         }
         if (body == null) {
             if (lastError != null) lastError.printStackTrace();
+            System.err.println("Overpass: all endpoints failed, returning no streets");
             return Collections.emptyList();
         }
 
         List<StreetData> result = new ArrayList<>();
         try {
             JsonNode root = mapper.convertValue(body, JsonNode.class);
+            if (root.has("remark")) {
+                System.err.println("Overpass remark: " + root.path("remark").asText());
+            }
+            if (root.has("error")) {
+                System.err.println("Overpass error: " + root.path("error").asText());
+                return Collections.emptyList();
+            }
 
             Map<String, double[]> nodes = new HashMap<>();
             root.path("elements").forEach(el -> {
@@ -268,6 +289,11 @@ public class CrimeDataService {
 
         // 候補1: 同じ道路名で端点がつながっているセグメントを1本の折れ線にまとめる
         List<StreetData> merged = mergeConnectedSegmentsByName(result);
+        if (merged.isEmpty() && !result.isEmpty()) {
+            System.err.println("Streets: no segments with crime/SV data in range");
+        } else if (!merged.isEmpty()) {
+            System.out.println("Streets: returning " + merged.size() + " segments for map");
+        }
 
         // パーセンタイルに基づいて色分け（上位20%: 赤, 次の20%: オレンジ, ...）
         if (!merged.isEmpty()) {

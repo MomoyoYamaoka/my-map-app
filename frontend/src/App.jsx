@@ -13,16 +13,26 @@ function App() {
   const [streets, setStreets] = useState([]);
 
   useEffect(() => {
+    // 別媒体（別ドメイン・iframe・別サーバ）から開いた場合、同じオリジンでないと /api/streets が届かない。
+    // 実行時は window.__API_BASE_URL__ を優先（埋め込み時に <script>window.__API_BASE_URL__='https://...';</script> で指定可能）。
     const apiBaseUrl =
-      import.meta.env.VITE_API_BASE_URL ??
-      (import.meta.env.DEV ? "http://localhost:8080" : "");
-    fetch(`${apiBaseUrl}/api/streets`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Street data:", data);
-        setStreets(data);
+      typeof window !== "undefined" && window.__API_BASE_URL__ != null
+        ? String(window.__API_BASE_URL__).replace(/\/$/, "")
+        : (import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? "http://localhost:8080" : ""));
+    const url = apiBaseUrl ? `${apiBaseUrl}/api/streets` : "/api/streets";
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error(`API ${res.status}: ${url}`);
+        return res.json();
       })
-      .catch((err) => console.error("Error fetching street data:", err));
+      .then((data) => {
+        console.log("Street data:", data?.length ?? 0, "segments");
+        setStreets(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        console.error("Error fetching street data:", err);
+        setStreets([]);
+      });
   }, []);
 
   const handleSearch = async (e) => {
