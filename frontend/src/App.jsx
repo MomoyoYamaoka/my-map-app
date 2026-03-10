@@ -187,8 +187,8 @@ function App() {
               </div>
             ) : (
               <div className="flex-1 flex flex-col rounded overflow-hidden">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  道路データ: {Array.isArray(streets) ? streets.length : 0} 本
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  道路データ: <span className="text-[#D04088] font-bold">{Array.isArray(streets) ? streets.length : 0}</span> 本
                   {Array.isArray(streets) && streets.length === 0 && (
                     <span className="ml-2 text-amber-600">（取得中またはAPI未接続）</span>
                   )}
@@ -238,15 +238,15 @@ function MyMap({ coords, language, streets }) {
       >
         {mapReady && paths.map((street, idx) => (
           <Polyline
-            key={idx}
+            key={street.streetId || idx}
             path={street.coordinates.map((p) => ({
-              lat: p.latitude,
-              lng: p.longitude,
+              lat: p.latitude ?? p.lat,
+              lng: p.longitude ?? p.lng,
             }))}
             options={{
-              strokeColor: street.color,
+              strokeColor: street.color || "#b22222",
               strokeOpacity: 1,
-              strokeWeight: 10,
+              strokeWeight: 14,
             }}
           />
         ))}
