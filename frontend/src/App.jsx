@@ -187,13 +187,15 @@ function App() {
               </div>
             ) : (
               <div className="flex-1 flex flex-col rounded overflow-hidden">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  道路データ: <span className="text-[#D04088] font-bold">{Array.isArray(streets) ? streets.length : 0}</span> 本
+                <div className="flex-shrink-0 px-3 py-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t flex items-center gap-2">
+                  <span className="text-base font-semibold text-gray-800 dark:text-gray-200">道路データ:</span>
+                  <span className="text-lg font-bold text-[#D04088]">{Array.isArray(streets) ? streets.length : 0}</span>
+                  <span className="text-base text-gray-600 dark:text-gray-400">本</span>
                   {Array.isArray(streets) && streets.length === 0 && (
-                    <span className="ml-2 text-amber-600">（取得中またはAPI未接続）</span>
+                    <span className="ml-2 text-sm text-amber-600">（取得中またはAPI未接続）</span>
                   )}
-                </p>
-                <div className="flex-1 min-h-0 rounded overflow-hidden">
+                </div>
+                <div className="flex-1 min-h-0 rounded-b overflow-hidden">
                   <MyMap coords={coords} language={language} streets={streets} />
                 </div>
               </div>
