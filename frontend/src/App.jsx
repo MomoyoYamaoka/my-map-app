@@ -245,8 +245,8 @@ function MyMap({ coords, language, streets }) {
             }))}
             options={{
               strokeColor: street.color,
-              strokeOpacity: 0.75,
-              strokeWeight: 5,
+              strokeOpacity: 1,
+              strokeWeight: 10,
             }}
           />
         ))}

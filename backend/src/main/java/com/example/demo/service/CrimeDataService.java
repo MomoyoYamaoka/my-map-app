@@ -336,20 +336,20 @@ public class CrimeDataService {
                 for (StreetData s : merged) {
                     double v = s.getAverageCrimeScore();
                     if (v >= tRed) {
-                        s.setColor("#ff0000");      // 赤
+                        s.setColor("#b22222");      // 濃い赤（危険度高）
                     } else if (v >= tOrange) {
-                        s.setColor("#ffa500");      // オレンジ
+                        s.setColor("#e67e00");     // 濃いオレンジ
                     } else if (v >= tYellow) {
-                        s.setColor("#ffff00");      // 黄色
+                        s.setColor("#c9a227");     // 濃い黄
                     } else if (v >= tLightGreen) {
-                        s.setColor("#90ee90");      // 黄緑
+                        s.setColor("#2e8b57");     // 濃い黄緑
                     } else {
-                        s.setColor("#00ff00");      // 緑
+                        s.setColor("#006400");     // 濃い緑（危険度低）
                     }
                 }
             } else {
                 // 1件しかない場合は中間色にしておく
-                merged.get(0).setColor("#ffff00");
+                merged.get(0).setColor("#c9a227");
             }
         }
         if (merged.isEmpty()) {
@@ -522,10 +522,10 @@ public class CrimeDataService {
 
     // 旧 colorFor は現在未使用だが、必要なら残しておく
     private String colorFor(double s) {
-        if (s >= 0.8) return "#ff0000";
-        if (s >= 0.6) return "#ffa500";
-        if (s >= 0.4) return "#ffff00";
-        if (s >= 0.2) return "#90ee90";
-        return "#00ff00";
+        if (s >= 0.8) return "#b22222";
+        if (s >= 0.6) return "#e67e00";
+        if (s >= 0.4) return "#c9a227";
+        if (s >= 0.2) return "#2e8b57";
+        return "#006400";
     }
 }
