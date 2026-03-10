@@ -130,6 +130,9 @@ function App() {
                       className="w-full pl-10 pr-4 py-2 rounded border focus:outline-none"
                     />
                   </div>
+                  <div className="flex items-center gap-1 px-3 py-1.5 bg-[#D04088] text-white rounded font-bold text-sm whitespace-nowrap">
+                    道路データ: <span>{Array.isArray(streets) ? streets.length : 0}</span> 本
+                  </div>
                 </div>
               </div>
             )}
@@ -186,18 +189,8 @@ function App() {
                 <textarea rows={6} maxLength={200} className="w-full px-4 py-2 rounded border" />
               </div>
             ) : (
-              <div className="flex-1 flex flex-col rounded overflow-hidden">
-                <div className="flex-shrink-0 px-3 py-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-t flex items-center gap-2">
-                  <span className="text-base font-semibold text-gray-800 dark:text-gray-200">道路データ:</span>
-                  <span className="text-lg font-bold text-[#D04088]">{Array.isArray(streets) ? streets.length : 0}</span>
-                  <span className="text-base text-gray-600 dark:text-gray-400">本</span>
-                  {Array.isArray(streets) && streets.length === 0 && (
-                    <span className="ml-2 text-sm text-amber-600">（取得中またはAPI未接続）</span>
-                  )}
-                </div>
-                <div className="flex-1 min-h-0 rounded-b overflow-hidden">
-                  <MyMap coords={coords} language={language} streets={streets} />
-                </div>
+              <div className="flex-1 min-h-0 rounded overflow-hidden">
+                <MyMap coords={coords} language={language} streets={streets} />
               </div>
             )}
           </main>
