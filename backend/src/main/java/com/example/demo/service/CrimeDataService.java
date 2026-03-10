@@ -353,10 +353,10 @@ public class CrimeDataService {
             }
         }
         if (merged.isEmpty()) {
-            List<StreetData> cached = loadCachedStreets();
-            if (!cached.isEmpty()) {
-                System.out.println("Streets: using cached fallback (" + cached.size() + " segments)");
-                return cached;
+            List<StreetData> cachedAfterMerge = loadCachedStreets();
+            if (!cachedAfterMerge.isEmpty()) {
+                System.out.println("Streets: using cached fallback (" + cachedAfterMerge.size() + " segments)");
+                return cachedAfterMerge;
             }
         }
         return merged;
